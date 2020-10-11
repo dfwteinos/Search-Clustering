@@ -1,6 +1,5 @@
 #include "arguments.h"
-#include <string>
-#include <iostream>
+#include "util.h"
 #include <ctime>
 
 int main(int argc, char **argv)
@@ -20,5 +19,8 @@ int main(int argc, char **argv)
         return -1;
     }
    
-   std:: cout << operation << std::endl;
+    std:: cout << operation << std::endl << input_file << std::endl;
+
+    read_file(input_file);
+   
 }
