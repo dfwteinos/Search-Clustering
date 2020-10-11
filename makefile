@@ -1,16 +1,19 @@
 all: lsh cube 
 
-main:  main.cpp arguments.h
+main:  main.cpp arguments.h util.h
 	g++ -g -c main.cpp -o main.o
 
 arguments: arguments.cpp arguments.h
 	g++ -g -c arguments.cpp -o arguments.o
 
-lsh: main arguments
-	g++ main.o arguments.o -o lsh
+util: util.cpp util.h
+	g++ -g -c util.cpp -o util.o
 
-cube: main arguments
-	g++ main.o arguments.o -o cube
+lsh: main arguments util
+	g++ main.o arguments.o util.o -o lsh
+
+cube: main arguments util
+	g++ main.o arguments.o util.o -o cube
 
 clean:
-	-rm -f all main.o arguments.o
+	-rm -f all main.o arguments.o util.o
