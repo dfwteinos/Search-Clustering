@@ -1,11 +1,32 @@
-main: main.o knn.o
-	g++ main.o knn.o -o main && rm *.o
+all:lsh cube
 
-main.o: main.cpp
-	g++ -c main.cpp
+main:  main.cpp arguments.h
+	g++ -g -c main.cpp -o main.o
 
-knn.o: knn.cpp knn.h
-	g++ -c knn.cpp
+arguments: arguments.cpp arguments.h
+	g++ -g -c arguments.cpp -o arguments.o
+
+lsh: main arguments
+	g++ main.o arguments.o -o lsh
+
+cube: main arguments
+	g++ main.o arguments.o -o cube && rm *.o
 
 clean:
-	rm main
+	-rm -f all: lsh cube
+
+
+#main:  main.cpp arguments.h
+#	g++ -g -c main.cpp -o main.o
+
+#arguments: arguments.cpp arguments.h
+#	g++ -g -c arguments.cpp -o arguments.o
+
+#lsh: main arguments
+#	g++ main.o arguments.o -o lsh
+
+#cube: main arguments
+#	g++ main.o arguments.o -o cube
+
+#clean:
+#	-rm lsh cube main.o arguments.o
