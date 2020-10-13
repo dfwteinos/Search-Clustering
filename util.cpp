@@ -56,6 +56,4 @@ void read_metadata(std::ifstream& file, uint32_t& magic_num, uint32_t& num_of_im
     columns = swap_endian(columns);
     std::cout << "#columns: " << columns << std::endl;
 
-    std::cout<<"mounaqi"<< std::endl;
-
 }  
