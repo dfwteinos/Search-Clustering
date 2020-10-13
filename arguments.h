@@ -2,7 +2,10 @@
 
 #define ARGUMENTS
 
-#include "types.h"
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <string.h>
 
 std::string get_operation(char *);                      //returns lsh or cube
 
