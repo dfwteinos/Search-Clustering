@@ -40,8 +40,6 @@ void read_file(std::string file_name)
 
 void read_metadata(std::ifstream& file, uint32_t& magic_num, uint32_t& num_of_images, uint32_t& rows, uint32_t& columns,int size){              //Take the metadata (magic number, number of images, rows and columns)
 
-    std::cout<< "skataqi"<< std::endl;
-
     file.read(reinterpret_cast<char*>(&magic_num), size);                                                                                       //we are doing this type of cast bcz we are playing with bits, and bcz we want to convet: 0x00000803 -> 2051
     magic_num = swap_endian(magic_num);
     std::cout << "magic num: " << magic_num << std::endl;
