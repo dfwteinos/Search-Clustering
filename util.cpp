@@ -17,11 +17,6 @@ void read_file(std::string file_name)
 
         read_metadata(file, magic_num, num_of_images, rows, columns, 4);
 
-        std::cout<< magic_num << std::endl;
-        std::cout<< num_of_images << std::endl;
-        std::cout<< rows << std::endl;
-        std::cout<< columns << std::endl;
-
         for (uint32_t i = 0; i < num_of_images; ++i)
         {
             for (uint32_t r = 0; r < rows; ++r)
