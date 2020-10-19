@@ -2,7 +2,7 @@
 #include "arguments.h"
 
 template <class T>
-HashTable<T>::HashTable(id_vector_collection<T> data_set, int k_value, int l_value, int R_value)
+HashTable<T>::HashTable(vector_list_collection<T> data_set, int k_value, int l_value, int R_value)
 {
     table_size = data_set.size() / 8;
     vector_size = 790; //data_set[0].second.size();
@@ -39,14 +39,14 @@ HashTable<T>::~HashTable()
 }
 
 template <class T>
-LSH<T>::LSH(id_vector_collection<T> data_set, int k_value, int l_value, int R)
+LSH<T>::LSH(vector_list_collection<T> data_set, int k_value, int l_value, int R)
     : HashTable<T>(data_set, k_value, l_value, R)
 {
     fill_table(data_set);
 }
 
 template <class T>
-void LSH<T>::fill_table(id_vector_collection<T> data_set)
+void LSH<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "in fill table " << std::endl;
     int index;
@@ -58,6 +58,8 @@ void LSH<T>::fill_table(id_vector_collection<T> data_set)
             this->tables[i][index].push_back(data_set[q]);
         }
     }
+    std::cout << "exiting fill_table" << std::endl;
+    return;
 }
 
 template <class T>
@@ -74,20 +76,22 @@ void HashTable<T>::table_state()
 }
 
 template <class T>
-T manhattan_distance(std::vector<T> x, std::vector<T> y)
+T manhattan_distance(std::list<T> x, std::list<T> y)
 {
     T result = 0;
-    for (size_t i = 0; i < x.size(); i++)
+    typename std::list<T>::iterator it;
+    typename std::list<T>::iterator ti;
+    for (it = x.begin(), ti = y.begin(); it != x.end(); ++it, ++ti)
     {
-        result += abs(x[i] - y[i]);
+        result += abs(*it - *ti);
     }
     return result;
 }
 
 template <class T>
-id_vector<T> LSH<T>::approximateNN(id_vector<T> query, T &res)
+image<T> LSH<T>::approximateNN(image<T> query, T &res)
 {
-    id_vector<T> best;
+    image<T> best;
     T best_distance = std::numeric_limits<T>::max();
     for (size_t i = 0; i < this->L; i++)
     {
@@ -121,9 +125,9 @@ id_vector<T> LSH<T>::approximateNN(id_vector<T> query, T &res)
 }
 
 template <class T>
-id_vector<T> bruteforce(id_vector_collection<T> data_set, id_vector<T> query, T &res)
+image<T> bruteforce(vector_list_collection<T> data_set, image<T> query, T &res)
 {
-    id_vector<T> best;
+    image<T> best;
     T best_distance = std::numeric_limits<T>::max();
     T current;
     for (ssize_t i = 0; i < data_set.size(); i++)
@@ -136,7 +140,6 @@ id_vector<T> bruteforce(id_vector_collection<T> data_set, id_vector<T> query, T 
         }
     }
     res = best_distance;
-
     return best;
 }
 
@@ -146,32 +149,32 @@ uint32_t swap_endian(uint32_t val)
     return (val << 16) | (val >> 16);
 }
 
-void read_metadata(std::ifstream& file, uint32_t& magic_num, uint32_t& num_of_images, uint32_t& rows, uint32_t& columns,int size){              //Take the metadata (magic number, number of images, rows and columns)
+void read_metadata(std::ifstream &file, uint32_t &magic_num, uint32_t &num_of_images, uint32_t &rows, uint32_t &columns, int size)
+{ //Take the metadata (magic number, number of images, rows and columns)
 
-    file.read(reinterpret_cast<char*>(&magic_num), size);                                                                                       //we are doing this type of cast bcz we are playing with bits, and bcz we want to convet: 0x00000803 -> 2051
+    file.read(reinterpret_cast<char *>(&magic_num), size); //we are doing this type of cast bcz we are playing with bits, and bcz we want to convet: 0x00000803 -> 2051
     magic_num = swap_endian(magic_num);
     std::cout << "magic num: " << magic_num << std::endl;
 
-    file.read(reinterpret_cast<char*>(&num_of_images), size);
+    file.read(reinterpret_cast<char *>(&num_of_images), size);
     num_of_images = swap_endian(num_of_images);
     std::cout << "#images: " << num_of_images << std::endl;
 
-    file.read(reinterpret_cast<char*>(&rows), size);
+    file.read(reinterpret_cast<char *>(&rows), size);
     rows = swap_endian(rows);
     std::cout << "#rows: " << rows << std::endl;
 
-    file.read(reinterpret_cast<char*>(&columns), size);
+    file.read(reinterpret_cast<char *>(&columns), size);
     columns = swap_endian(columns);
     std::cout << "#columns: " << columns << std::endl;
-
-} 
+}
 
 template <class T>
-std::pair<double, id_vector_collection<T>> HashTable<T>::vectorise_data(std::string file_name)
+vector_list_collection<T> HashTable<T>::vectorise_data(std::string file_name)
 {
-    std::pair<double, id_vector_collection<T>> vectors;
+    // std::pair<double, vector_list_collection<T>> data;
 
-    std::vector<T> current;
+    vector_list_collection<T> data;
 
     std::ifstream file;                                    //Stream class to read from files
     file.open(file_name, std::ios::in | std::ios::binary); // in(open for input operations), binary(open in binary mode)
@@ -184,19 +187,19 @@ std::pair<double, id_vector_collection<T>> HashTable<T>::vectorise_data(std::str
 
         for (uint32_t i = 0; i < num_of_images; ++i)
         {
+            data.push_back(std::pair<int, std::list<T>>(i, std::list<T>()));
+
             for (uint32_t r = 0; r < rows; ++r)
             {
                 for (uint32_t c = 0; c < columns; ++c)
                 {
                     unsigned char temp = 0;
                     file.read((char *)&temp, sizeof(temp));
-                    // std::cout << (double) temp << std::endl;                     //We have only int input, we are not going to need (double) cast.
-                    // std::cout << (int) temp << std::endl;
-                    current.push_back((int)temp); //each vector of element
+                    data[i].second.push_back((int)temp); //each pixel of image
                 }
             }
-            
-            vectors.second.push_back(std::pair<std::string, std::vector<T>>("1", current)); //all elements
+
+            // data.push_back(std::pair<std::string, std::vector<T>>("1", current)); //all elements
         }
         std::cout << "done reading files" << std::endl;
     }
@@ -206,10 +209,8 @@ std::pair<double, id_vector_collection<T>> HashTable<T>::vectorise_data(std::str
         exit(EXIT_FAILURE);
     }
 
-    return vectors;
-} 
-
-
+    return data;
+}
 
 template <class T>
 void HashTable<T>::get_neighbours(std::ostream &my_file)
@@ -226,11 +227,11 @@ void HashTable<T>::get_neighbours(std::ostream &my_file)
 }
 
 template <class T>
-HyperCube<T>::HyperCube(id_vector_collection<T> t, int k, int L, int R, int M, int probes)
+HyperCube<T>::HyperCube(vector_list_collection<T> t, int k, int L, int R, int M, int probes)
     : HashTable<T>(t, k, L, R), M(M), probes(probes) { fill_table(t); }
 
 template <class T>
-void HyperCube<T>::fill_table(id_vector_collection<T> data_set)
+void HyperCube<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "in hypercube's fill table " << std::endl;
     T index;
@@ -251,9 +252,9 @@ void HyperCube<T>::fill_table(id_vector_collection<T> data_set)
 }
 
 template <class T>
-id_vector<T> HyperCube<T>::approximateNN(id_vector<T> query, T &res)
+image<T> HyperCube<T>::approximateNN(image<T> query, T &res)
 {
-    id_vector<T> best;
+    image<T> best;
     if (this->probes > this->f.size())
         this->probes = this->f.size();
     int best_distance = std::numeric_limits<int>::max();
@@ -313,5 +314,5 @@ template class HashTable<int>;
 template class HyperCube<double>;
 template class LSH<double>;
 template class HashTable<double>;
-template id_vector<int> bruteforce(id_vector_collection<int>, id_vector<int>, int &);
-template id_vector<double> bruteforce(id_vector_collection<double>, id_vector<double>, double &);
+template image<int> bruteforce(vector_list_collection<int>, image<int>, int &);
+template image<double> bruteforce(vector_list_collection<double>, image<double>, double &);

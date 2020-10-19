@@ -10,13 +10,14 @@
 #include <fstream>
 #include <unordered_map>
 #include <bits/stdc++.h>
+#include <list>
 #include <algorithm>
 
 template <class T>
 class HFunction {
     public:
         HFunction(int, int);
-        int apply(std::vector<T>);
+        int apply(std::list<T>);
         
     private:
         std::vector<double> s;
@@ -33,7 +34,7 @@ template <class T>
 class GFunction {
     public:
         GFunction(std::vector< HFunction<T>* >);
-        int apply(std::vector<T>);
+        int apply(std::list<T>);
 
     private:
         std::vector< HFunction< T >* > functions; 

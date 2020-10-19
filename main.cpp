@@ -35,9 +35,9 @@ int main(int argc, char **argv)
     do
     {
         if (operation.compare("lsh") == 0)
-            lsh<int>(input_file, query_file, k, L, output_file);
+            lsh<int>(input_file, query_file, k, L, R, output_file);
         else if (operation.compare("cube") == 0)
-            cube<int>(input_file, query_file, k, M, probes, output_file);
+            cube<int>(input_file, query_file, k, M, R, probes, output_file);
        
        
         std::cout << "Do you want to continue?" << std::endl;

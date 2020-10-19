@@ -34,11 +34,12 @@ inline int modulo(int number, int mod_number){
 
 
 template <class T> 
-int HFunction<T>::apply(std::vector<T> q){
+int HFunction<T>::apply(std::list<T> q){
     int result = 0;
     int size = q.size();
+    std::list<T> q_temp = q;
     for (size_t i = 0; i < size; i++) {
-        int a = std::floor((q[i] - s[i])/w);
+        int a = std::floor((q_temp.front() - s[i])/w);
         result += modulo(a, M) * m_power[i];
     }
     return modulo(result, M);
@@ -63,7 +64,7 @@ GFunction<T>::GFunction(std::vector< HFunction< T >* > h_functions){
 
 
 template < class T>
-int GFunction<T>::apply(std::vector<T> q){
+int GFunction<T>::apply(std::list<T> q){
     int result = 0;
     for (size_t i = 0; i < functions.size(); i++){
         int temp = functions[i]->apply(q);
@@ -83,9 +84,9 @@ void HFunction<T>::vector_init(std::vector<double> &v, int size) {
 
     for (ssize_t i = 0; i < size; i++) {
         v.push_back(random_real(gen));
-        //std::cout << v[i] << " ";
+        // std::cout << v[i] << " ";
     }
-    //std::cout << std::endl;
+
 }
 
 template <class T>
