@@ -64,7 +64,7 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, in
 
     // for (size_t i = 0; i < query.size(); i++)
 
-    for (size_t i = 0; i < 5; i++)
+    for (size_t i = 0; i < 100; i++)
     {
         std::cout << i << std::endl;
         start = std::clock();
@@ -120,7 +120,7 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, in
         // a_sum += lsh_dis;
     }
 
-    T sum = 5;
+    T sum = 100;
     // T sum = query.size();
     myfile << "Cost is: " << (double) cost_function( t_lsh/sum, t_true/sum, (d_lsh/sum)/3, (d_true/sum)/3 ) << std::endl;
     // myfile << "Average distance:" << (double)a_sum / e_sum << std::endl;
