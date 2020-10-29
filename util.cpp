@@ -20,7 +20,7 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, st
 
     LSH<T> lsh(input, k, L, R);
 
-    for (size_t i = 0; i < query.size(); i++)
+    for (size_t i = 0; i < query.size()/10; i++)
     {
         start = std::clock();
         brute_res = bruteforce<T>(input, query[i], brute_dis);
@@ -66,9 +66,10 @@ void cube(std::string input_file, std::string query_file, int k, int M, int R, i
     myfile.open(output);
 
     T e_sum = 0, a_sum = 0;
+    std::cout << "k " << k << std::endl;
     HyperCube<T> hpc(input, k, log(input.size()), R, M, probes);
 
-    for (size_t i = 0; i < query.size(); i++)
+    for (size_t i = 0; i < query.size()/20; i++)
     {
         start = std::clock();
         brute_res = bruteforce<T>(input, query[i], brute_dis);

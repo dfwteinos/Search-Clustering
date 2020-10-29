@@ -84,7 +84,7 @@ void set_default_parameter(std::string operation,                //set default p
 
     if ( (operation.compare("cube")==0) && argc==7 ) {
 
-        k=3;
+        k=14;
     }
 
     return;

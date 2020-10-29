@@ -8,9 +8,9 @@ int main(int argc, char **argv)
 
     std::string input_file, query_file, output_file;
 
-    int k = 0, L = 5, M = 10, N = 1, probes = 2;
+    int k = 14, L = 5, M = 10, N = 1, probes = 2;
 
-    double R = 1.0;
+    double R = 50000;
 
     if (get_parameters(argc, argv,
                        operation,
