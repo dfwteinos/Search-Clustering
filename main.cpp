@@ -8,9 +8,9 @@ int main(int argc, char **argv)
 
     std::string input_file, query_file, output_file;
 
-    int k = 0, L = 5, M = 10, N = 1, probes = 2;
+    int k = 0, L = 5, M = 10, N = 3, probes = 2;
 
-    double R = 1.0;
+    double R = 10000.0, c=2;
 
     if (get_parameters(argc, argv,
                        operation,
@@ -32,13 +32,12 @@ int main(int argc, char **argv)
 
     bool repeat = true;
 
-    do
+    while(repeat)
     {
         if (operation.compare("lsh") == 0)
-            lsh<int>(input_file, query_file, k, L, output_file);
+            lsh<int>(input_file, query_file, k, L, R, N, c, output_file);
         else if (operation.compare("cube") == 0)
-            cube<int>(input_file, query_file, k, M, probes, output_file);
-       
+            cube<int>(input_file, query_file, k, M, R, N, c, probes, output_file);
        
         std::cout << "Do you want to continue?" << std::endl;
         
@@ -46,10 +45,10 @@ int main(int argc, char **argv)
         
         std::cin >> reply;
 
-        if (!reply.compare("yes"))
+        if (!reply.compare("no"))
             repeat = false;
 
-        if (repeat == false)
+        if (repeat == true)
         {
 
             std::cout << "input_file: ";
@@ -62,5 +61,5 @@ int main(int argc, char **argv)
             std::cin >> output_file;
             std::cout << std::endl;
         }
-    } while(repeat);
+    }
 }

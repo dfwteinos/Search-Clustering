@@ -8,23 +8,19 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <list>
+#include <iterator>
 #include "hash_tables.h"
+#include <cmath>        
 
-uint32_t swap_endian(uint32_t);                                                         //Convert from high endian to low endian. (and vice cersa?)
-
-void read_file(std::string);                                                            //Read the given files (train and query)
-
-void read_metadata(std::ifstream&, uint32_t&, uint32_t&, uint32_t&, uint32_t&, int);    //Take the metadata (magic number, number of images, rows and columns)
-// uint32_t swap_endian(uint32_t);                                                         //Convert from high endian to low endian. (and vice cersa?)
-
-// void read_file(std::string);                                                            //Read the given files (train and query)
-
-// void read_metadata(std::ifstream&, uint32_t&, uint32_t&, uint32_t&, uint32_t&, int);    //Take the metadata (magic number, number of images, rows and columns)
 
 template <class T>
-void lsh(std::string input_file, std::string query_file, int k, int L, std::string output);
+void lsh(std::string, std::string, int, int, int, int, double ,std::string);
 
 template <class T>
-void cube(std::string input_file, std::string query_file, int k, int M, int probes, std::string output);
+void cube(std::string, std::string, int, int, int, int , double ,int, std::string);
+
+template <class T>
+double cost_function(double ,double ,T ,T);
 
 #endif //UTIL
