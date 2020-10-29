@@ -59,8 +59,8 @@ void LSH<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "In Fill Table " << std::endl;
     int index;
-    // for (size_t q = 0; q < data_set.size(); q++)
-    for (size_t q = 0; q < 300; q++)
+    for (size_t q = 0; q < data_set.size(); q++)
+    // for (size_t q = 0; q < 300; q++)
 
     {
         for (size_t i = 0; i < this->L; i++)
