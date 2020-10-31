@@ -6,9 +6,11 @@ int main(int argc, char **argv)
 {
     std::string operation = get_operation(argv[0]);
 
-    std::string input_file, query_file, output_file;
+    std::string input_file, query_file, output_file;                        //Essentialy for: LSH , CUBE , CLUSTER.
+    std::string cluster_conf, complete, method;                             //Essentialy only for: CLUSTER.
 
-    int k = 0, L = 5, M = 10, N = 3, probes = 2;
+    int k = 0, L = 5, M = 10, N = 1, probes = 2;                            //Essentialy for: LSH, CUBE, CLUSTER.
+    int kClusters, kLSH, kCUBE;                                             //Essentialy only for: CLUSTER.
 
     double R = 10000.0, c=2;
 
@@ -17,7 +19,10 @@ int main(int argc, char **argv)
                        input_file,
                        query_file,
                        output_file,
-                       k, L, M, N, probes,
+                       cluster_conf,
+                       complete,
+                       method,
+                       k, L, M, N, probes, kClusters, kLSH, kCUBE,
                        R) < 3)
     {
         printf("Please check the recommended input options\n");
@@ -26,9 +31,6 @@ int main(int argc, char **argv)
 
     std::cout << operation << std::endl
               << input_file << std::endl;
-    // std:: cout << k << std::endl;
-
-   // read_file(input_file);
 
     bool repeat = true;
 
@@ -38,7 +40,8 @@ int main(int argc, char **argv)
             lsh<int>(input_file, query_file, k, L, R, N, c, output_file);
         else if (operation.compare("cube") == 0)
             cube<int>(input_file, query_file, k, M, R, N, c, probes, output_file);
-       
+        else cluster<int>(input_file);                                                                                    // operation == cluster
+
         std::cout << "Do you want to continue?" << std::endl;
         
         std::string reply;

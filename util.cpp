@@ -179,9 +179,19 @@ void cube(std::string input_file, std::string query_file, int k, int M, int R, i
     myfile.close();
 }
 
+template <class T>
+void cluster(std::string input_file)
+{
+    return;
+}
+
 //Question(?): Are these necessary? 
 
 template void lsh<int>(std::string, std::string, int, int, int, int, double, std::string output);
 template void lsh<double>(std::string, std::string, int, int, int, int, double, std::string output);
+
 template void cube<int>(std::string, std::string, int, int, int, int, double ,int, std::string output);
 template void cube<double>(std::string, std::string, int, int, int, int, double ,int, std::string output);
+
+template void cluster<int>(std::string);
+template void cluster<double>(std::string);

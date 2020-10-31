@@ -134,7 +134,7 @@ void HFunction<T>::vector_init(std::vector<double> &v, int size) {
 template <class T>
 HFunction<T>::HFunction(int size, int K) {
 
-    w = 52;                                                                               //Should be l*avg.Distance(l is an positive whole number)(?)
+    w = 4000;                                                                               //Should be l*avg.Distance(l is an positive whole number)(?)
     M = (int) pow(2,(32/K));
     // m = (unsigned int) pow(2, 32) - 4;                                                    
     m = (unsigned int) pow(2,29) - 5;                                                       //According to new slides

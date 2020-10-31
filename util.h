@@ -21,6 +21,9 @@ template <class T>
 void cube(std::string, std::string, int, int, int, int , double ,int, std::string);
 
 template <class T>
+void cluster(std::string);
+
+template <class T>
 double cost_function(double ,double ,T ,T);
 
 #endif //UTIL
