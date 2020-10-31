@@ -8,9 +8,17 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <list>
+#include <iterator>
+#include "hash_tables.h"
 
-uint32_t swap_endian(uint32_t);
+template <class T>
+void lsh(std::string, std::string, int, int, int, int, double ,std::string);
 
-void read_file(std::string);
+template <class T>
+void cube(std::string, std::string, int, int, int, int, double ,int, std::string);
+
+template <class T>
+double cost_function(double ,double ,T ,T);
 
 #endif //UTIL
