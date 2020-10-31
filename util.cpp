@@ -137,7 +137,7 @@ void cube(std::string input_file, std::string query_file, int k, int M, int R, i
     T d_hpc = 0, d_true = 0;
     double t_hpc = 0, t_true = 0;
 
-    for (size_t i = 0; i < query.size()/10; i++)
+    for (size_t i = 0; i < query.size(); i++)
     {
         std::cout << i << std::endl;
         start = std::clock();
@@ -155,7 +155,7 @@ void cube(std::string input_file, std::string query_file, int k, int M, int R, i
 
             myfile << "Nearest Neighbor-" << j << ": " << (hpcres[j].first).first << std::endl;
             myfile << "distanceHPC: " << hpcres[j].second << std::endl;
-            myfile << "distanceTrue: " << hpcres[j].second << std::endl;
+            myfile << "distanceTrue: " << bruteres[j].second << std::endl;
 
             d_hpc += hpcres[j].second;
             d_true += bruteres[j].second;

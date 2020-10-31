@@ -29,7 +29,7 @@ void HyperCube<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "In Fill Table " << std::endl;
     T index;
-    for (size_t q = 0; q < data_set.size() / 10; q++)
+    for (size_t q = 0; q < data_set.size(); q++)
     {
         std::string temp;
         for (size_t i = 0; i < this->K; i++)
@@ -81,53 +81,21 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
 
     int images_checked = this->M;
 
-    if (points.find(temp_point) != points.end()) //If there are more than images in the same position
-    {
-        for (auto it = points[temp_point].begin(); it < points[temp_point].end(); ++it) //Search each of them
-        {
-            temp_img = (*it);
-            temp_dist = manhattan_distance<T>(query.second, it->second); //Each calculated distance between query and image
-            temp_cand = make_pair(temp_img, temp_dist);                  //Each candidate of a pair of image(image itself and distance of this image from the query q)
-
-            std::cout << "DISTANCE " << temp_dist << std::endl;
-
-            if (temp_dist <= (unsigned int)((this->R) * 2 * (this->c)))
-            { //If the distance is inside the (R-Ball) then push back this image
-                best_imgs.push_back(temp_cand);
-                RS_imgs.push_back(temp_cand);
-                images_checked--;
-            }
-
-            if (images_checked <= 0)
-            {
-                std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-                if (temp_dist < best_imgs.back().second)
-                { //If the temp. distance if lower than the last item of our candidates, then replace it
-
-                    best_imgs.push_back(temp_cand); //If doesen't work, try vector.insert(vector.end(), x)
-                    std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-                }
-                break;
-            }
-        }
-    }
-
-    //If the number of images checked isn't equal to M and probes isn't 0, search nearest points
+    //Search nearest points
     if (images_checked > 0 && this->probes > 0)
     {
         int points_checked = this->probes;
-        //get nearest points
+        //Get nearest points
         std::map<int, std::string> nearest_points;
-
         for (auto it = points.begin(); it != points.end(); ++it)
         {
-            nearest_points.insert({hammingDist(temp_point, (std::string)(it->first)), (std::string)(it->first)});
+            nearest_points.insert({hammingDist(temp_point, (std::string)(it->first)), (std::string)(it->first)});   //For every point in the cube find the Hamminf distance between that and query's point
         }
 
-        //for all the nearest points find those within radius and calculate manhattan
+        //For all the nearest points according to the Hamming distance we calculated
         for (auto ti = nearest_points.begin(); ti != nearest_points.end(); ++ti)
         {
-            for (auto it = points[ti->second].begin(); it < points[ti->second].end(); ++it)
+            for (auto it = points[ti->second].begin(); it < points[ti->second].end(); ++it)     //For every image in currenmt point
             {
                 temp_img = (*it);
                 temp_dist = manhattan_distance<T>(query.second, it->second); //Each calculated distance between query and image
@@ -144,11 +112,6 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
                 if (images_checked <= 0)
                 {
                     std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-                    if (temp_dist < best_imgs.back().second)
-                    { //If the temp distance if lower than the last item of our candidates, then replace it
-                        best_imgs.push_back(temp_cand);
-                        std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-                    }
 
                     break;
                 }
@@ -163,12 +126,6 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
                 if (best_imgs.size() != 0) //And found at least one in given R-range, calculate best neighboors
                 {
                     std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-
-                    if (temp_dist < best_imgs.back().second)
-                    { //If the temp. distance if lower than the last item of our candidates, then replace it
-                        best_imgs.push_back(temp_cand);
-                        std::sort(best_imgs.begin(), best_imgs.end(), sortbysec<T>);
-                    }
                 }
                 break;
             }
