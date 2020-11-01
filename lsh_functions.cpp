@@ -43,7 +43,7 @@ void LSH<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "In Fill Table " << std::endl;
     int index;
-    for (size_t q = 0; q < data_set.size() / 100; q++)
+    for (size_t q = 0; q < data_set.size(); q++)
     {
         for (size_t i = 0; i < this->L; i++)
         {
@@ -75,10 +75,9 @@ std::vector<cand_img<T>> LSH<T>::aNNeighbours(image<T> query, int N, std::vector
     for (size_t i = 0; i < this->L; i++)
     { //For all the HashTables
 
-        unsigned int full_index = this->g_functions[i]->apply(query.second); //Putting the query in a HashTable
+        unsigned int full_index = this->g_functions[i]->apply(query.second); //Putting the query in a HashTable Bucket
         int index = full_index % this->table_size;
         int points = 0;
-        std::cout << index << std::endl;
 
         for (size_t j = 0; j < this->tables[i][index].size(); j++)
         { //For all the elements inside this bucket in the i HashTable
@@ -133,7 +132,7 @@ std::vector<cand_img<T>> LSH<T>::aNNeighbours(image<T> query, int N, std::vector
 }
 
 template <class T>
-clusters<T> LSH<T>::reverse_assignment(vector_list_collection<T> &centroids, vector_list_collection<T> &images)
+clusters<T> LSH<T>::reverse_assignment(vector_list_collection<T> centroids, vector_list_collection<T> images)
 {
 
     clusters<T> i2c;

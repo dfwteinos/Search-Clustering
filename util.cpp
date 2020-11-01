@@ -1,4 +1,5 @@
 #include "util.h"
+using namespace std::chrono; 
 
 template <class T>
 double cost_function(double t_lsh, double t_true, T mean_lsh, T mean_true)
@@ -31,18 +32,10 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, in
     image<T> brute_res, lsh_res;
 
     //brute and lsh distance
-    //Question(?) No diffrence between distance and type of pixel(?) Maybe we should change that
-
     T brute_dis, lsh_dis;
     double max = 0.0;
 
-    // auto starti = std::chrono::steady_clock::now();
-
     vector_list_collection<T> input = HashTable<T>::vectorise_data(input_file);
-
-    // auto stopi = std::chrono::steady_clock::now();
-    // std::chrono::duration<double> elapsed_seconds = stopi-starti;
-    // std::cout << elapsed_seconds.count() << std::endl;
 
     vector_list_collection<T> query = HashTable<T>::vectorise_data(query_file);
 
@@ -100,11 +93,48 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, in
         t_true += brute_dur;
     }
 
-    T sum = 100;
+    T sum = query.size();
 
-    myfile << "Cost is: " << (double)cost_function(t_lsh / sum, t_true / sum, (d_lsh / sum) / 3, (d_true / sum) / 3) << std::endl;
+    myfile << "Cost is: " << (double)cost_function(t_lsh / sum, t_true / sum, (d_lsh / sum) / N, (d_true / sum) / N) << std::endl;
     myfile.close();
 }
+
+template <class T>
+void clustering(std::string input_file, std::string output, std::string complete ,int kClusters,std::string method, int k, int L, double R, int N, double c, int M, int probes){
+
+    int iterations= 10;
+
+    std::vector <cluster<T>> kclusters;
+    vector_list_collection<T> input = HashTable<T>::vectorise_data(input_file);     //  Read input file
+    vector_list_collection<T> centroids;                                            //  K-Centroids
+    vector_list_collection<T> next_centroids;
+    std::vector<double> s;
+    double cluster_time;
+    std::clock_t start;
+
+    start = std::clock();
+
+    k_means(input, centroids, kClusters);                                           // centroids are the first k centroids that we want
+    for(int i = 0 ; i < iterations; i++){
+    
+        performClustering(method,input,kclusters,centroids, k, L, R, N, c, M, probes);
+        
+        // Lloyds(input, kclusters, centroids);
+        k_Medians(kclusters,next_centroids,784);
+        
+        if(i!=iterations-1) kclusters.clear();
+        centroids=next_centroids;
+        next_centroids.clear();
+    }
+    cluster_time = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+    Silhouette(kclusters, s);
+
+    clusteringResults(method, complete, output, kclusters, s, cluster_time);
+
+    return;
+
+}
+
 
 template <class T>
 void cube(std::string input_file, std::string query_file, int k, int M, int R, int N, double c, int probes, std::string output)
@@ -177,13 +207,19 @@ void cube(std::string input_file, std::string query_file, int k, int M, int R, i
         t_true += brute_dur;
     }
 
-    T sum = 100;
+    T sum =  query.size();
 
-    myfile << "Cost is: " << (double)cost_function(t_hpc / sum, t_true / sum, (d_hpc / sum) / 3, (d_true / sum) / 3) << std::endl;
+    myfile << "Cost is: " << (double)cost_function(t_hpc / sum, t_true / sum, (d_hpc / sum) / N, (d_true / sum) / N) << std::endl;
     myfile.close();
 }
 
 template void lsh<int>(std::string, std::string, int, int, int, int, double, std::string output);
 template void lsh<double>(std::string, std::string, int, int, int, int, double, std::string output);
+
 template void cube<int>(std::string, std::string, int, int, int, int, double, int, std::string output);
 template void cube<double>(std::string, std::string, int, int, int, int, double, int, std::string output);
+
+template void clustering<int>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int);
+template void clustering<double>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int);
+
+

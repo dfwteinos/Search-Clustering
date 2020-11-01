@@ -53,7 +53,7 @@ unsigned int mod(int a, int m)
 template <class T>
 HFunction<T>::HFunction(int size, int K)
 {
-    w = 52; //Should be l*avg.Distance(l is an positive whole number)(?)
+    w = 52; 
     M = (int)pow(2, (32 / K));
     m = (unsigned int)pow(2, 29) - 5; //According to new slides
     for (ssize_t i = 0; i < size; i++)
@@ -122,8 +122,6 @@ int GFunction<T>::apply(std::vector<T> q)
 template <class T>
 void HFunction<T>::vector_init(std::vector<double> &v, int size)
 {
-    std::cout << "Initiate Vector values: ";
-
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> random_real(0, w);

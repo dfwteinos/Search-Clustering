@@ -204,7 +204,6 @@ bool handle_conflicts(vector_list_collection<T> &centroids, image<T> &image, clu
                 if (manhattan_distance(image.second, (it->first).second) > dist)
                 {
                     (it->second).erase((it->second).begin() + index); //If distance is larger than given distance erase image from current cluster
-                    std::cout << "Item erased!" << std::endl;
                     return true;
                 }
                 else

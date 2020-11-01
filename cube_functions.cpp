@@ -46,7 +46,7 @@ void HyperCube<T>::fill_table(vector_list_collection<T> data_set)
             p.push_back(data_set[q]);
             points.insert({temp, p});
         }
-        std::cout << "TEMP " << temp << std::endl;
+      
     }
     std::cout << "Exiting Fill Table" << std::endl;
     return;
@@ -77,7 +77,6 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
     {
         temp_point += this->f_functions[i]->apply(query.second);
     }
-    std::cout << "query str" << temp_point << std::endl;
 
     int images_checked = this->M;
 
@@ -99,7 +98,7 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
             {
                 temp_img = (*it);
                 temp_dist = manhattan_distance<T>(query.second, it->second); //Each calculated distance between query and image
-                std::cout << "DISTANCE 2  " << temp_dist << std::endl;
+
                 temp_cand = make_pair(temp_img, temp_dist);
 
                 if (temp_dist <= (unsigned int)((this->R) * (this->c)))
@@ -134,7 +133,11 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
 
     if (best_imgs.size() > N) //In case M > N, return the N best neighboors
     {
-        for (int i = 0; i < (best_imgs.size() - N); i++)
+        const int best_imgs_size = best_imgs.size();
+        
+        // for (int i = 0; i < (best_imgs.size() - N); i++)
+
+        for (int i = 0; i < (best_imgs_size - N); i++ )
         {
             auto last = best_imgs.end();
             best_imgs.erase(last);
@@ -146,7 +149,7 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
 }
 
 template <class T>
-clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroids)
+clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> centroids)
 {
 
     clusters<T> i2c;
@@ -163,7 +166,6 @@ clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroid
             temp_point += this->f_functions[i]->apply(ti->second);
         }
 
-        std::cout << "centroid :" << temp_point << std::endl;
          if (c_points.find(temp_point) == c_points.end()) //Keep centroid's position in map
         {
             vector_list_collection<T> temp;
@@ -192,7 +194,6 @@ clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroid
                         int temp_dist = manhattan_distance((ti->first).second, it->second);
                         if (handle_conflicts(centroids, (*it), i2c, temp_dist) == true) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
                         {
-                            std::cout << "image " << (it->first) << " added to cluster " << (ti->first).first << " !" << std::endl;
                             (ti->second).push_back((*it)); //Insert image to current cluster
                         }
                     }
@@ -200,7 +201,6 @@ clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroid
             }
             else
             {
-                std::cout << "unassigned point" << std::endl;
                 for (auto it = (p->second).begin(); it != (p->second).end(); ++it) //Find if any of the images already exists in a cluster
                 {
                     if (it->first != (ti->first).first)
@@ -208,7 +208,6 @@ clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroid
                         int temp_dist = manhattan_distance((ti->first).second, it->second);
                         if (handle_conflicts(centroids, (*it), i2c, temp_dist) == true) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
                         {
-                            std::cout << "image " << (it->first) << " added to cluster " << (ti->first).first << " !" << std::endl;
                             (ti->second).push_back((*it)); //Insert image to current cluster
                         }
                     }
