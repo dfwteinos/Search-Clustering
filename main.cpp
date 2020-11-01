@@ -41,7 +41,7 @@ int main(int argc, char **argv)
             lsh<int>(input_file, query_file, k, L, R, N, c, output_file);
         else if (operation.compare("cube") == 0)
             cube<int>(input_file, query_file, k, M, R, N, c, probes, output_file);
-        else clustering<int>(input_file, kClusters);                                                                                    // operation == cluster
+        else clustering<int>(input_file, output_file, complete, kClusters, method, k, L, R, N, c, M, probes);      
 
         std::cout << "Do you want to continue?" << std::endl;
         

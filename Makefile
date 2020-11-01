@@ -47,7 +47,7 @@ gdbcube: main arguments util hash_functions hash_tables lsh_functions cube_funct
 	g++ -g3 -o cube arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && gdb --args cube -d train-images-idx3-ubyte -q t10k-images-idx3-ubyte -o output.txt
 
 gdbclu: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
-	g++ -g3 -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o	lsh_functions.o cube_functions.o cluster_functions.o && gdb --args cluster -i train-images-idx3-ubyte -c cluster.conf -o output.txt -complete yes -m Classic
+	g++ -g3 -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o	lsh_functions.o cube_functions.o cluster_functions.o && gdb --args cluster -i t10k-images-idx3-ubyte -c cluster.conf -o output.txt -complete yes -m Classic
 
 vallsh: main arguments util hash_functions hash_tables lsh_functions cube_functions
 	g++ -o lsh arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o && valgrind ./lsh -d train-images-idx3-ubyte -q t10k-images-idx3-ubyte -o output.txt

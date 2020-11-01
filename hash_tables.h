@@ -32,6 +32,9 @@ template <typename T>
 using cluster   = std::pair< image<T> , vector_list_collection<T> >;        // [0] = centroid, [1] = images for this specific centroid
 
 
+template <typename T>
+using clusters = std::vector<std::pair<image<T>, vector_list_collection<T>>>;
+
 template <class T>
 class HashTable
 {
@@ -62,6 +65,9 @@ public:
     void fill_table(vector_list_collection<T>);
     std::vector<cand_img<T>> aNNeighbours(image<T>, int, std::vector<cand_img<T>> &); //Returns K-Nearest Neighbours and their Distance from point q.
 
+    //reverse assingment
+    clusters<T> reverse_assignment(vector_list_collection<T> , vector_list_collection<T> );
+
 private:
     std::vector<std::vector<vector_list_collection<T>>> tables;
     std::vector<GFunction<T> *> g_functions;
@@ -75,6 +81,9 @@ public:
     HyperCube(vector_list_collection<T>, int, int, int, int, int, double, int);
     ~HyperCube();
     std::vector<cand_img<T>> aNNeighbours(image<T>, int, std::vector<cand_img<T>> &);
+
+    //reverse assignment
+    clusters<T> reverse_assignment(vector_list_collection<T> );
 
 private:
     void fill_table(vector_list_collection<T>);
@@ -95,5 +104,8 @@ std::vector<cand_img<T>> bruteforcelsh(vector_list_collection<T>, image<T>, int)
 
 template <class T>
 bool sortbysec(cand_img<T> &a, cand_img<T> &b);
+
+template <class T>
+bool handle_conflicts(vector_list_collection<T> &, image<T> &, clusters<T> &, int);
 
 #endif //HASH_TABLES

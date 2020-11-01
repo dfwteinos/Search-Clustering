@@ -52,15 +52,90 @@ void k_means(vector_list_collection<T> input , vector_list_collection<T> &centro
 }
 
 template <class T>
-void return_index(std::vector<T> datapoint, std::vector<cluster<T>> clusters, int &best_next_centroid,int current){
+void clusteringResults(std::string method, std::string complete, std::string output, std::vector<cluster<T>> kclusters, std::vector<double> s, double cluster_time){
+
+    std::ofstream myfile;
+    myfile.open(output);
+    double si=0;
+
+    myfile <<"Algorithm: " << method << std::endl;
+
+    for(int i = 0; i < kclusters.size(); i++){
+
+        myfile << "CLUSTER-" << i << " (size: " << kclusters[i].second.size() << ", centroids: " ; 
+        for(auto it = kclusters[i].first.second.begin(); it!= kclusters[i].first.second.end(); ++it ){  myfile << *it << " " ;}  
+        myfile << " }" << std::endl;
+    }
+
+    myfile<<"clustering time: "<< cluster_time << std::endl;
+
+    for(int j=0; j<s.size(); j++){
+        si += s[j];
+    }
+    s.push_back(si);
+
+    myfile << "Sihlouette: [ " ;
+    for(int l=0; l<s.size(); l++){
+        myfile << s[l] << ", ";
+    }
+
+    myfile << " ]" << std::endl;
+
+    if(complete.compare("yes"))
+    {
+
+        for(int i = 0; i < kclusters.size(); i++){
+
+            myfile<< "CLUSTER-" << i << " (size: " << kclusters[i].first.first << ", centroids: " ; 
+            for(auto it = kclusters[i].second.begin(); it!= kclusters[i].second.end(); ++it ){  myfile << it->first << " " ;}  
+            myfile<< " } " << std::endl;
+        }
+    }
+
+
+}
+
+
+template <class T>
+void performClustering(std::string method, vector_list_collection<T> input, std::vector<cluster<T>>& kclusters, vector_list_collection<T> centroids, int k, int L, double R, int N, double c, int M, int probes){
+
+    if(!method.compare("Classic"))
+    {
+        Lloyds(input, kclusters, centroids);
+    }
+    else if(!method.compare("LSH"))
+    {
+        LSH<T> lsh(input, k, L, R, N, c);
+        kclusters = lsh.reverse_assignment(centroids, input);
+        // delete lsh;
+    }
+    else if(!method.compare("HyperCube"))
+    {
+        HyperCube<T> hpc(input, k, log(input.size()), R, N, M, probes, c);
+        kclusters = hpc.reverse_assignment(centroids);
+        // delete hpc;
+    }
+    else
+    {
+        std::cout << "Wrong method, please use one of the recommended ones" << std::endl;
+        perror("Exit failure");
+        exit(0);
+    }
+    
+
+}
+
+
+template <class T>
+void return_index(std::vector<T> datapoint, std::vector<cluster<T>> kclusters, int &best_next_centroid,int current){
 
     int temp_dist;
     int best_dist = INT_MAX;
 
-    for(int i = 0 ; i < clusters.size(); i++){
+    for(int i = 0 ; i < kclusters.size(); i++){
         if(current!=i)
         {
-            temp_dist = manhattan_distance( clusters[i].first.second, datapoint );
+            temp_dist = manhattan_distance( kclusters[i].first.second, datapoint );
             if( temp_dist < best_dist)
             {
                 best_dist = temp_dist;
@@ -72,52 +147,55 @@ void return_index(std::vector<T> datapoint, std::vector<cluster<T>> clusters, in
 
 
 template <class T>
-void Silhouette(std::vector<cluster<T>> clusters, std::vector<double>& s_vector){
+void Silhouette(std::vector<cluster<T>> kclusters, std::vector<double>& s_vector){
 
-    std::vector<unsigned int> a, b, s, s_clusters;
-    unsigned int a_i, b_i, s_i;
+    double avg=0;
+
+    double avg_s;
+    std::vector<double> cluster_s;
+    std::vector<double> a, b, s_kclusters;
+    double a_i, b_i, s_i, cluster_a, cluster_b;
+
     int best_next_centroid;                                                 
 
-    for(int k = 0; k < clusters.size(); k++){                                           //For each cluster
+    for(int k = 0; k < kclusters.size(); k++){                                           //For each cluster
         
         a.clear();
         b.clear();
 
+        cluster_a   = 0; 
+        cluster_b   = 0;
+        avg_s       = 0;
+
         std::cout << k << std::endl;
-        for(int s = 0; s < clusters[k].second.size(); s++){                             //For all the images in this cluster
+        for(int s = 0; s < kclusters[k].second.size(); s++){                             //For all the images in this cluster
 
             a_i = 0; 
             b_i = 0;
 
-            return_index(clusters[k].second[s].second , clusters, best_next_centroid, k);
+            return_index(kclusters[k].second[s].second , kclusters, best_next_centroid, k);
 
-            for(int t = 0; t < clusters[k].second.size(); t++){                         //For each image, check all its neighbour
+            for(int t = 0; t < kclusters[k].second.size(); t++){                         //For each image, check all its neighbour
 
-                if(s!=t) a_i += a_i + manhattan_distance( clusters[k].second[s].second, clusters[k].second[t].second );
+                if(s!=t) a_i +=  (manhattan_distance( kclusters[k].second[s].second, kclusters[k].second[t].second ))/ (kclusters[k].second.size()) ;
             }
 
-            for(int l = 0; l < clusters[best_next_centroid].second.size(); l++)
+            for(int l = 0; l < kclusters[best_next_centroid].second.size(); l++)
             {
 
-                b_i += b_i + manhattan_distance( clusters[best_next_centroid].second[l].second, clusters[k].second[s].second );
+                b_i += (manhattan_distance( kclusters[best_next_centroid].second[l].second, kclusters[k].second[s].second ) )/ (kclusters[best_next_centroid].second.size())  ;
             }
 
-            a.push_back(a_i/clusters[k].second.size());
-            b.push_back(b_i/clusters[best_next_centroid].second.size());
-
+            a.push_back(a_i);
+            b.push_back(b_i);
+            double max;
+            max = (a[s] > b[s]) ? a[s] : b[s] ; 
+            cluster_s.push_back( (b[s]-a[s])/max );
+            avg_s += cluster_s[s]/kclusters[k].second.size();
         }
 
-        unsigned int avg=0;
-        double max;
-        for(int i =0 ; i < a.size(); i++){
-        
-            max = (a[i] > b[i]) ? a[i] : b[i] ; 
-            s.push_back( (b[i] - a[i]) / max );
-            avg += avg + s[i];
-        }
-
-        s_clusters.push_back(avg/s.size());
-
+        s_vector.push_back(avg_s);
+        std::cout << avg_s << std::endl;
     }
 }
 
@@ -139,15 +217,15 @@ double checkVariation(vector_list_collection<T> centroids,vector_list_collection
 
 
 template <class T>
-void k_Medians(std::vector<cluster<T>> clusters, vector_list_collection<T>& next_centroids, int pixels){
+void k_Medians(std::vector<cluster<T>> kclusters, vector_list_collection<T>& next_centroids, int pixels){
 
     std::vector<std::vector<T>> median_centroid(pixels);
     
-    for(int k = 0; k < clusters.size(); k++){                                   //For each cluster
-        for(int s = 0; s<clusters[k].second.size(); s++){                       //For all the data points|< <img>,...,<imgs> >|who belongs to this cluster                  
-            for(int p = 0; p<clusters[k].second[s].second.size(); p++){         //For 784 pixels for each img in this specific cluster
+    for(int k = 0; k < kclusters.size(); k++){                                   //For each cluster
+        for(int s = 0; s<kclusters[k].second.size(); s++){                       //For all the data points|< <img>,...,<imgs> >|who belongs to this cluster                  
+            for(int p = 0; p<kclusters[k].second[s].second.size(); p++){         //For 784 pixels for each img in this specific cluster
 
-                median_centroid[p].push_back(clusters[k].second[s].second[p]);  
+                median_centroid[p].push_back(kclusters[k].second[s].second[p]);  
             }
         }
     
@@ -190,14 +268,14 @@ T computeMedian(std::vector<T> eachPixel){
 }
 
 template <class T>
-void Lloyds(vector_list_collection<T> input, std::vector<cluster<T>>& clusters, vector_list_collection<T> centroids){
+void Lloyds(vector_list_collection<T> input, std::vector<cluster<T>>& kclusters, vector_list_collection<T> centroids){
     
 
-    for(int j = 0; j < centroids.size(); j++){                                             // Initialize clusters
+    for(int j = 0; j < centroids.size(); j++){                                             // Initialize kclusters
 
         cluster<T> each_cluster;
         each_cluster.first = (centroids[j]);
-        clusters.push_back(each_cluster);
+        kclusters.push_back(each_cluster);
     }
 
     int best_dist;
@@ -209,14 +287,14 @@ void Lloyds(vector_list_collection<T> input, std::vector<cluster<T>>& clusters, 
 
         for( int k = 0; k < centroids.size(); k++){
 
-            temp_dist = manhattan_distance( clusters[k].first.second, input[i].second );
+            temp_dist = manhattan_distance( kclusters[k].first.second, input[i].second );
             if ( temp_dist < best_dist ) {
                 best_dist = temp_dist;
                 best_index = k;
             }
         }
 
-        clusters[best_index].second.push_back(input[i]);
+        kclusters[best_index].second.push_back(input[i]);
     }
 
     return;
@@ -295,8 +373,14 @@ template double computeMedian<double>(std::vector<double>);
 template double checkVariation<int>(vector_list_collection<int>, vector_list_collection<int>);
 template double checkVariation<double>(vector_list_collection<double>, vector_list_collection<double>);
 
-template void Silhouette<int>(std::vector<cluster<int>> clusters, std::vector<double>&);
-template void Silhouette<double>(std::vector<cluster<double>> clusters, std::vector<double>&);
+template void Silhouette<int>(std::vector<cluster<int>> kclusters, std::vector<double>&);
+template void Silhouette<double>(std::vector<cluster<double>> kclusters, std::vector<double>&);
 
 template void return_index<int>(std::vector<int>, std::vector<cluster<int>>, int&, int);
 template void return_index<double>(std::vector<double>, std::vector<cluster<double>>, int&, int);
+
+template void performClustering<int>(std::string , vector_list_collection<int> , std::vector<cluster<int>>& , vector_list_collection<int> , int , int , double , int , double , int , int);
+template void performClustering<double>(std::string , vector_list_collection<double> , std::vector<cluster<double>>& , vector_list_collection<double> , int , int , double , int , double , int , int);
+
+template void clusteringResults<int>(std::string, std::string, std::string, std::vector<cluster<int>>, std::vector<double>, double );
+template void clusteringResults<double>(std::string, std::string, std::string, std::vector<cluster<double>>, std::vector<double>, double );

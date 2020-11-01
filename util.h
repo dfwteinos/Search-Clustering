@@ -25,7 +25,7 @@ double cost_function(double ,double ,T ,T);
 ///////////////////////////////////     Cluster functions    ////////////////////////////////////
 
 template <class T>
-void clustering(std::string, int);
+void clustering(std::string, std::string, std::string, int, std::string, int, int, double, int, double, int, int);
 
 template <class T>
 void k_means(vector_list_collection<T>, vector_list_collection<T>&, int);
@@ -58,6 +58,11 @@ void Silhouette(std::vector<cluster<T>>, std::vector<double>&);
 template <class T>
 void return_index(std::vector<T>, std::vector<cluster<T>>, int&, int);
 
+template <class T>
+void performClustering(std::string , vector_list_collection<T> , std::vector<cluster<T>>& , vector_list_collection<T> , int , int , double , int , double , int , int);
+
+template <class T>
+void clusteringResults(std::string, std::string, std::string, std::vector<cluster<T>>, std::vector<double>, double);
 
 
 #endif //UTIL
