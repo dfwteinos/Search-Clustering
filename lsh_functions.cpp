@@ -43,7 +43,7 @@ void LSH<T>::fill_table(vector_list_collection<T> data_set)
 {
     std::cout << "In Fill Table " << std::endl;
     int index;
-    for (size_t q = 0; q < data_set.size(); q++)
+    for (size_t q = 0; q < data_set.size() / 100; q++)
     {
         for (size_t i = 0; i < this->L; i++)
         {
@@ -130,6 +130,80 @@ std::vector<cand_img<T>> LSH<T>::aNNeighbours(image<T> query, int N, std::vector
 
     RS_vector = RS_imgs;
     return best_imgs;
+}
+
+template <class T>
+clusters<T> LSH<T>::reverse_assignment(vector_list_collection<T> &centroids, vector_list_collection<T> &images)
+{
+
+    clusters<T> i2c;
+    std::map<int, vector_list_collection<T>> c_buckets; //To store centroids based on their place in the hash table
+
+    for (auto ti = centroids.begin(); ti != centroids.end(); ++ti) //Initialize vector of centroids
+    {
+        vector_list_collection<T> v;
+        i2c.push_back({(*ti), v});
+    }
+
+    for (auto ti = i2c.begin(); ti != i2c.end(); ++ti) //For every centroid in the vector, we start by checking at the same buckets
+    {
+        for (size_t i = 0; i < this->L; i++)
+        {
+            unsigned int full_index = this->g_functions[i]->apply((ti->first).second); //Find centroids position in a HashTable
+            int index = full_index % this->table_size;
+
+            if (c_buckets.find(index) == c_buckets.end()) //Keep centroid's position in map
+            {
+                vector_list_collection<T> temp;
+                temp.push_back(ti->first);
+                c_buckets.insert({index, temp});
+            }
+            else
+            {
+                c_buckets[index].push_back(ti->first);
+            }
+
+            for (size_t j = 0; j < this->tables[i][index].size(); j++)
+            {
+                if (this->tables[i][index][j].first != (ti->first).first)
+                {
+                    int temp_dist = manhattan_distance((ti->first).second, this->tables[i][index][j].second);
+                    if (handle_conflicts(centroids, this->tables[i][index][j], i2c, temp_dist)) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
+                    {
+                        (ti->second).push_back(this->tables[i][index][j]); //Insert image to current cluster
+                    }
+                }
+            }
+        }
+    }
+
+    for (auto ti = i2c.begin(); ti != i2c.end(); ++ti) //For every centroid in the vector, we start by checking at the same buckets
+    {
+        for (size_t q = 0; q < images.size(); q++)
+        {
+            for (size_t i = 0; i < this->L; i++)
+            {
+
+                int index = (unsigned int)this->g_functions[i]->apply(images[q].second) % this->table_size;
+                if (c_buckets.find(index) == c_buckets.end())
+                {
+                    for (size_t j = 0; j < this->tables[i][index].size(); j++)
+                    {
+                        if (this->tables[i][index][j].first != (ti->first).first)
+                        {
+                            int temp_dist = manhattan_distance((ti->first).second, this->tables[i][index][j].second);
+                            if (handle_conflicts(centroids, this->tables[i][index][j], i2c, temp_dist)) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
+                            {
+                                (ti->second).push_back(this->tables[i][index][j]); //Insert image to current cluster
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return i2c;
 }
 
 template class LSH<int>;

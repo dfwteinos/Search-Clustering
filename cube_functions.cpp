@@ -89,13 +89,13 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
         std::map<int, std::string> nearest_points;
         for (auto it = points.begin(); it != points.end(); ++it)
         {
-            nearest_points.insert({hammingDist(temp_point, (std::string)(it->first)), (std::string)(it->first)});   //For every point in the cube find the Hamminf distance between that and query's point
+            nearest_points.insert({hammingDist(temp_point, (std::string)(it->first)), (std::string)(it->first)}); //For every point in the cube find the Hamminf distance between that and query's point
         }
 
         //For all the nearest points according to the Hamming distance we calculated
         for (auto ti = nearest_points.begin(); ti != nearest_points.end(); ++ti)
         {
-            for (auto it = points[ti->second].begin(); it < points[ti->second].end(); ++it)     //For every image in currenmt point
+            for (auto it = points[ti->second].begin(); it != points[ti->second].end(); ++it) //For every image in currenmt point
             {
                 temp_img = (*it);
                 temp_dist = manhattan_distance<T>(query.second, it->second); //Each calculated distance between query and image
@@ -143,6 +143,81 @@ std::vector<cand_img<T>> HyperCube<T>::aNNeighbours(image<T> query, int N, std::
 
     RS_vector = RS_imgs;
     return best_imgs;
+}
+
+template <class T>
+clusters<T> HyperCube<T>::reverse_assignment(vector_list_collection<T> &centroids)
+{
+
+    clusters<T> i2c;
+    std::map<std::string, vector_list_collection<T>> c_points; //To store centroids based on their point in the cube
+
+    for (auto ti = centroids.begin(); ti != centroids.end(); ++ti) //Initialize vector of centroids
+    {
+        vector_list_collection<T> v;
+        i2c.push_back(std::make_pair((*ti), v));
+        std::string temp_point;
+
+        for (size_t i = 0; i < this->K; i++) //Get the centroid's position(point identifier) in the hypercube
+        {
+            temp_point += this->f_functions[i]->apply(ti->second);
+        }
+
+        std::cout << "centroid :" << temp_point << std::endl;
+         if (c_points.find(temp_point) == c_points.end()) //Keep centroid's position in map
+        {
+            vector_list_collection<T> temp;
+            temp.push_back((*ti));
+            c_points.insert({temp_point, temp});
+        }
+        else
+        {
+            c_points[temp_point].push_back((*ti));
+        }
+    }
+
+    //Manage the collisions first
+    for (auto p = points.begin(); p != points.end(); ++p)
+    {
+
+        for (auto ti = i2c.begin(); ti != i2c.end(); ++ti) //For every centroid in the vector, we start by checking at the same points
+        {
+
+            if (c_points.find(p->first) != c_points.end())
+            {
+                for (auto it = points[p->first].begin(); it != points[p->first].end(); ++it) //Find if any of the images already exists in a cluster
+                {
+                    if (it->first != (ti->first).first)
+                    {
+                        int temp_dist = manhattan_distance((ti->first).second, it->second);
+                        if (handle_conflicts(centroids, (*it), i2c, temp_dist) == true) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
+                        {
+                            std::cout << "image " << (it->first) << " added to cluster " << (ti->first).first << " !" << std::endl;
+                            (ti->second).push_back((*it)); //Insert image to current cluster
+                        }
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "unassigned point" << std::endl;
+                for (auto it = (p->second).begin(); it != (p->second).end(); ++it) //Find if any of the images already exists in a cluster
+                {
+                    if (it->first != (ti->first).first)
+                    {
+                        int temp_dist = manhattan_distance((ti->first).second, it->second);
+                        if (handle_conflicts(centroids, (*it), i2c, temp_dist) == true) //If the manhattan distance to curent centroid is smaller then the previous(or if it is the first time we check current image)
+                        {
+                            std::cout << "image " << (it->first) << " added to cluster " << (ti->first).first << " !" << std::endl;
+                            (ti->second).push_back((*it)); //Insert image to current cluster
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return i2c;
 }
 
 template class HyperCube<int>;
