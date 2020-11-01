@@ -123,7 +123,7 @@ int get_cluster_parameters( std::string cluster_conf,
 
     while( std::getline(file,line)){                                    // Reach line by line the file
 
-        std::cout << line.substr(line.find(" ") + 1) <<  std::endl;
+        // std::cout << line.substr(line.find(" ") + 1) <<  std::endl;
         token = line.substr(0, line.find(delimiter));
 
         if(! token.compare("number_of_clusters"))

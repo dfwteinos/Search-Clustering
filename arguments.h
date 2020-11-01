@@ -9,8 +9,6 @@
 #include <sstream>
 #include <fstream>
 
-
-
 std::string get_operation(char *);                      //returns lsh or cube
 
 int get_parameters(int, char **,                        //get input parameters from user

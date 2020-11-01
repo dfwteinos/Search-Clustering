@@ -1,3 +1,4 @@
+
 #include "arguments.h"
 #include "util.h"
 #include <ctime>
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
             lsh<int>(input_file, query_file, k, L, R, N, c, output_file);
         else if (operation.compare("cube") == 0)
             cube<int>(input_file, query_file, k, M, R, N, c, probes, output_file);
-        else cluster<int>(input_file);                                                                                    // operation == cluster
+        else clustering<int>(input_file, kClusters);                                                                                    // operation == cluster
 
         std::cout << "Do you want to continue?" << std::endl;
         

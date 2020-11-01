@@ -12,77 +12,88 @@
 #include <algorithm>
 #include <set>
 #include <list>
+#include <map>
 #include <iterator>
 #include "hash_functions.h"
 
 template <typename T>
-using image = std::pair< int, std::vector <T> >;                                           // pair: < (image_number) ,    the image it_self as a vector  >
+using image = std::pair<int, std::vector<T>>;               // pair: < (image_number) ,    the image it_self as a vector  >
 
 template <typename T>
-using vector_list_collection = std::vector< image<T> >;                                 // vector_list_collection: A vector of images
+using vector_list_collection = std::vector<image<T>>;       // vector_list_collection: A vector of images
 
 template <typename T>
-using cand_img = std::pair< image<T>, T >;                                              // pair collection of a candidate image and its distance from a query q
+using cand_img = std::pair<image<T>, T>;                    // pair collection of a candidate image and its distance from a query q
+
+template <typename T>
+using distances = std::vector< std::vector<T> >;            //Contains all the D(i) = i = {1,2, . . . , n-t} distances
+
+template <typename T>
+using cluster   = std::pair< image<T> , vector_list_collection<T> >;        // [0] = centroid, [1] = images for this specific centroid
+
 
 template <class T>
-class HashTable {
-    public:
-        HashTable(vector_list_collection<T>, int, int, int, int, double);
-        virtual image<T> approximateNN(image<T>, T&){};
-        ~HashTable();
-        static vector_list_collection<T> vectorise_data(std::string file);              // static declaration in class makes this function accesible from non-class members
-        void table_state();
-        virtual void fill_table(vector_list_collection<T>) {};
-        std::vector< GFunction<T>* > get_GFunctions();
-        void get_neighbours(std::ostream&);
+class HashTable
+{
+public:
+    HashTable(vector_list_collection<T>, int, int, int, int, double);
+    static vector_list_collection<T> vectorise_data(std::string file); // static declaration in class makes this function accesible from non-class members
+    virtual void fill_table(vector_list_collection<T>){};
+    std::vector<GFunction<T> *> get_GFunctions();
+    void get_neighbours(std::ostream &);
 
-    protected:
-        int table_size;
-        int vector_size;
-        int L;
-        int K;
-        int N;
-        double R;
-        double c;
-        std::set<image<T> > neighbours;
-        std::vector< std::vector< vector_list_collection<T> > > tables;
-        std::vector< GFunction<T>* > g_functions;
-        std::vector< HFunction<T>* > h_functions;
+protected:
+    int table_size;
+    int vector_size;
+    int L;
+    int K;
+    int N;
+    double R;
+    double c;
+    std::set<image<T>> neighbours;
 };
 
 template <class T>
-class LSH: public HashTable<T> {
-    public:
-        LSH(vector_list_collection<T>, int, int, int, int, double);
-        image<T> approximateNN(image<T>, T&);
-        void fill_table(vector_list_collection<T>);
-        std::vector < cand_img<T> > aNNeighbours(image<T> , int , std::vector < cand_img<T>>&);                   //Returns K-Nearest Neighbours and their Distance from point q.
+class LSH : public HashTable<T>
+{
+public:
+    LSH(vector_list_collection<T>, int, int, int, int, double);
+    ~LSH();
+    void fill_table(vector_list_collection<T>);
+    std::vector<cand_img<T>> aNNeighbours(image<T>, int, std::vector<cand_img<T>> &); //Returns K-Nearest Neighbours and their Distance from point q.
+
+private:
+    std::vector<std::vector<vector_list_collection<T>>> tables;
+    std::vector<GFunction<T> *> g_functions;
+    std::vector<HFunction<T> *> h_functions;
 };
 
 template <class T>
-class HyperCube: public HashTable<T> {
-    public:
-        HyperCube(vector_list_collection<T>, int, int, int, int, int, int, double);
-        image<T> approximateNN(image<T>, T&);
-    
-    private:
-        void fill_table(vector_list_collection<T>);
-        std::unordered_multimap<std::string,image<T>> f;
-        std::unordered_map<T, std::string> dict;
-        int M; 
-        int probes;
-   
+class HyperCube : public HashTable<T>
+{
+public:
+    HyperCube(vector_list_collection<T>, int, int, int, int, int, double, int);
+    ~HyperCube();
+    std::vector<cand_img<T>> aNNeighbours(image<T>, int, std::vector<cand_img<T>> &);
+
+private:
+    void fill_table(vector_list_collection<T>);
+    std::map<std::string, vector_list_collection<T>> points;
+    std::vector<f_Function<T> *> f_functions;
+    int M;
+    int probes;
 };
 
+template <class T>
+T manhattan_distance(std::vector<T> x, std::vector<T> y);
 
 template <class T>
-image<T> bruteforce(vector_list_collection<T>, image<T>, T&);
+image<T> bruteforce(vector_list_collection<T>, image<T>, T &);
 
 template <class T>
-std::vector < cand_img<T> > bruteforcelsh(vector_list_collection<T> , image<T>  , int );
+std::vector<cand_img<T>> bruteforcelsh(vector_list_collection<T>, image<T>, int);
 
 template <class T>
-bool sortbysec( cand_img<T> &a, cand_img<T> &b);
-
+bool sortbysec(cand_img<T> &a, cand_img<T> &b);
 
 #endif //HASH_TABLES

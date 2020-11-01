@@ -13,37 +13,54 @@
 #include <list>
 #include <algorithm>
 
-template <class T>
-class HFunction {
-    public:
-        HFunction(int, int);
-        // int apply(std::list<T>);
-        int apply(std::vector<T>);
-        
-    private:
-        std::vector<double> s;                                                      // vector { s_0 , s_1, ... , s_(d-1) }
-        float w;                                                                    
-        int M;                                                                         
-        unsigned int m;
-        std::vector<int> m_power;                                                   // vector { m^0 , m^1, ... , m^(d-1) }
-
-        void vector_init(std::vector<double> &, int);
-
-};
 
 template <class T>
-class GFunction {
-    public:
-        GFunction(std::vector< HFunction<T>* >);
-        // int apply(std::list<T>);
-        int apply(std::vector<T>);
+class HFunction
+{
+public:
+    HFunction(int, int);
+    int apply(std::vector<T>);
 
-    private:
-        std::vector< HFunction< T >* > functions; 
+protected:
+    std::vector<double> s;
+    float w;
+    int M;
+    unsigned int m;
+    std::vector<int> m_power;
 
+    void vector_init(std::vector<double> &, int);
 };
 
-bool hammingDist(std::string str1, std::string str2, int diff);
+
+template <class T>
+class GFunction
+{
+public:
+    GFunction(std::vector<HFunction<T> *>);
+    int apply(std::vector<T>);
+
+private:
+    std::vector<HFunction<T> *> functions;
+};
+
+
+template <class T>
+class f_Function
+{
+public:
+    f_Function(int, int);
+    ~f_Function();
+    std::string apply(std::vector<T>);
+
+private:
+    std::map<int, std::string> dict;
+    HFunction<T>* hf;
+    std::mt19937 generator;
+     std::vector<HFunction<T> *> h_functions;
+};
+
+
+int hammingDist(std::string str1, std::string str2);
 int mult_power(unsigned int, int, int);
 
 #endif
