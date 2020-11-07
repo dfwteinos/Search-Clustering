@@ -1,5 +1,5 @@
-#include "hash_tables.h"
-#include "arguments.h"
+#include "../include/hash_tables.h"
+#include "../include/arguments.h"
 
 template <class T>
 LSH<T>::LSH(vector_list_collection<T> data_set, int k_value, int l_value, int R, int N, double c)

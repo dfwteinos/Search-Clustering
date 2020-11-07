@@ -1,5 +1,5 @@
-#include "hash_tables.h"
-#include "arguments.h"
+#include "../include/hash_tables.h"
+#include "../include/arguments.h"
 
 template <class T>
 HashTable<T>::HashTable(vector_list_collection<T> data_set, int k_value, int l_value, int R_value, int N_value, double C_value)

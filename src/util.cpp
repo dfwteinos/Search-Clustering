@@ -1,4 +1,4 @@
-#include "util.h"
+#include "../include/util.h"
 using namespace std::chrono; 
 
 template <class T>
@@ -100,13 +100,11 @@ void lsh(std::string input_file, std::string query_file, int k, int L, int R, in
 }
 
 template <class T>
-void clustering(std::string input_file, std::string output, std::string complete ,int kClusters,std::string method, int k, int L, double R, int N, double c, int M, int probes){
-
-    int iterations= 10;
+void clustering(std::string input_file, std::string output, std::string complete ,int kClusters,std::string method, int k, int L, double R, int N, double c, int M, int probes,int iterations){
 
     std::vector <cluster<T>> kclusters;
-    vector_list_collection<T> input = HashTable<T>::vectorise_data(input_file);     //  Read input file
-    vector_list_collection<T> centroids;                                            //  K-Centroids
+    vector_list_collection<T> input = HashTable<T>::vectorise_data(input_file);             //  Read input file
+    vector_list_collection<T> centroids;                                                    //  K-Centroids
     vector_list_collection<T> next_centroids;
     std::vector<double> s;
     double cluster_time;
@@ -114,22 +112,21 @@ void clustering(std::string input_file, std::string output, std::string complete
 
     start = std::clock();
 
-    k_means(input, centroids, kClusters);                                           // centroids are the first k centroids that we want
+    k_means(input, centroids, kClusters);                                                   // Centroids are the first k centroids that we want
     for(int i = 0 ; i < iterations; i++){
     
-        performClustering(method,input,kclusters,centroids, k, L, R, N, c, M, probes);
+        performClustering(method,input,kclusters,centroids, k, L, R, N, c, M, probes);      // Choose between Lloyds, LSH R.S , HPC R.S
         
-        // Lloyds(input, kclusters, centroids);
-        k_Medians(kclusters,next_centroids,784);
+        k_Medians(kclusters,next_centroids,784);                                            // Update centroids
         
         if(i!=iterations-1) kclusters.clear();
         centroids=next_centroids;
         next_centroids.clear();
     }
     cluster_time = (std::clock() - start) / (double)CLOCKS_PER_SEC;
-    Silhouette(kclusters, s);
+    Silhouette(kclusters, s);                                                               // Evaluate how "good" our clustering was
 
-    clusteringResults(method, complete, output, kclusters, s, cluster_time);
+    clusteringResults(method, complete, output, kclusters, s, cluster_time);                // Print results
 
     return;
 
@@ -219,7 +216,5 @@ template void lsh<double>(std::string, std::string, int, int, int, int, double, 
 template void cube<int>(std::string, std::string, int, int, int, int, double, int, std::string output);
 template void cube<double>(std::string, std::string, int, int, int, int, double, int, std::string output);
 
-template void clustering<int>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int);
-template void clustering<double>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int);
-
-
+template void clustering<int>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int, int);
+template void clustering<double>(std::string, std::string, std::string, int, std::string, int, int, double, int , double, int, int, int);

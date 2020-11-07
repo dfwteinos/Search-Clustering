@@ -25,8 +25,8 @@ double cost_function(double ,double ,T ,T);
 ///////////////////////////////////     Cluster functions    ////////////////////////////////////
 
 template <class T>
-void clustering(std::string, std::string, std::string, int, std::string, int, int, double, int, double, int, int);
-
+void clustering(std::string, std::string, std::string, int, std::string, int, int, double, int, double, int, int, int);
+ 
 template <class T>
 void k_means(vector_list_collection<T>, vector_list_collection<T>&, int);
 

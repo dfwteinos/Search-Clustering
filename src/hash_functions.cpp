@@ -1,4 +1,4 @@
-#include "hash_functions.h"
+#include "../include/hash_functions.h"
 
 int hammingDist(std::string str1, std::string str2)
 {

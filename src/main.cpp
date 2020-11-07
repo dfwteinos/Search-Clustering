@@ -1,6 +1,6 @@
 
-#include "arguments.h"
-#include "util.h"
+#include "../include/arguments.h"
+#include "../include/util.h"
 #include <ctime>
 
 int main(int argc, char **argv)
@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 
     int k = 0, L = 5, M = 10, N = 1, probes = 2;                            //Essentialy for: LSH, CUBE, CLUSTER.
     int kClusters, kLSH, kCUBE;                                             //Essentialy only for: CLUSTER.
+    int iterations=10;                                                      //Iterations for kmedians update
 
     double R = 10000.0, c=3;
 
@@ -41,7 +42,7 @@ int main(int argc, char **argv)
             lsh<int>(input_file, query_file, k, L, R, N, c, output_file);
         else if (operation.compare("cube") == 0)
             cube<int>(input_file, query_file, k, M, R, N, c, probes, output_file);
-        else clustering<int>(input_file, output_file, complete, kClusters, method, k, L, R, N, c, M, probes);      
+        else clustering<int>(input_file, output_file, complete, kClusters, method, k, L, R, N, c, M, probes,iterations);      
 
         std::cout << "Do you want to continue?" << std::endl;
         

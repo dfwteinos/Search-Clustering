@@ -1,4 +1,4 @@
-#include "hash_tables.h"
+#include "../include/hash_tables.h"
 
 template <class T>
 HyperCube<T>::HyperCube(vector_list_collection<T> data_set, int k_value, int l_value, int R_value, int N_value, int M_value, double C_value, int probes_value)

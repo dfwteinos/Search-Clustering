@@ -17,20 +17,19 @@
 #include "hash_functions.h"
 
 template <typename T>
-using image = std::pair<int, std::vector<T>>;               // pair: < (image_number) ,    the image it_self as a vector  >
+using image = std::pair<int, std::vector<T>>;                               // pair: < (image_number) ,    the image it_self as a vector  >
 
 template <typename T>
-using vector_list_collection = std::vector<image<T>>;       // vector_list_collection: A vector of images
+using vector_list_collection = std::vector<image<T>>;                       // vector_list_collection: A vector of images
 
 template <typename T>
-using cand_img = std::pair<image<T>, T>;                    // pair collection of a candidate image and its distance from a query q
+using cand_img = std::pair<image<T>, T>;                                    // pair collection of a candidate image and its distance from a query q
 
 template <typename T>
-using distances = std::vector< std::vector<T> >;            //Contains all the D(i) = i = {1,2, . . . , n-t} distances
+using distances = std::vector< std::vector<T> >;                            //Contains all the D(i) = i = {1,2, . . . , n-t} distances
 
 template <typename T>
 using cluster   = std::pair< image<T> , vector_list_collection<T> >;        // [0] = centroid, [1] = images for this specific centroid
-
 
 template <typename T>
 using clusters = std::vector<std::pair<image<T>, vector_list_collection<T>>>;

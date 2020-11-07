@@ -1,4 +1,4 @@
-#include "arguments.h"
+#include "../include/arguments.h"
 
 std::string get_operation(char *name)
 {
