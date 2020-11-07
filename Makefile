@@ -57,3 +57,21 @@ valcube: main arguments util hash_functions hash_tables lsh_functions cube_funct
 
 valclu:  main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
 	g++ -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && valgrind ./cluster -i data/train-images-idx3-ubyte -c conf/cluster.conf -o output.txt -complete yes -m Classic
+
+# Recommended running options, usign default values
+
+lshdef: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
+	g++ -o lsh arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && ./lsh -d data/train-images-idx3-ubyte -q data/t10k-images-idx3-ubyte -o output.txt
+
+cubedef: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
+	g++ -o cube arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && ./cube -d data/train-images-idx3-ubyte -q data/t10k-images-idx3-ubyte -o output.txt
+
+clucla: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
+	g++ -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && ./cluster -i data/train-images-idx3-ubyte -c conf/cluster.conf -o output.txt -complete yes -m Classic
+
+clulsh: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
+	g++ -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && ./cluster -i data/train-images-idx3-ubyte -c conf/cluster.conf -o output.txt -complete yes -m LSH
+
+cluhpc: main arguments util hash_functions hash_tables lsh_functions cube_functions cluster_functions
+	g++ -o cluster arguments.o hash_functions.o util.o main.o hash_tables.o lsh_functions.o cube_functions.o cluster_functions.o && ./cluster -i data/train-images-idx3-ubyte -c conf/cluster.conf -o output.txt -complete yes -m HyperCube
+
